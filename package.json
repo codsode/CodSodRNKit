@@ -1,0 +1,32 @@
+{
+  "name": "@codsod/react-native-kit",
+  "version": "0.0.1",
+  "description": "Boilerplate for react native project",
+  "main": "post-init.script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codsode/CodSodRNKit.git"
+  },
+  "keywords": [
+    "react",
+    "native",
+    "react-native",
+    "boilerplate",
+    "codsod"
+  ],
+  "author": "Vishal Chaturvedi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codsode/CodSodRNKit/issues"
+  },
+  "homepage": "https://github.com/codsode/CodSodRNKit#readme",
+  "dependencies": {
+    "kleur": "^4.1.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

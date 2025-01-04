@@ -1,0 +1,74 @@
+************* Navigation ****************
+    const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
+
+************* API Calling With React Query ****************
+POST
+    
+    interface LoginResponse {
+        success:boolean;
+        message:string;
+    }
+
+    interface LoginRequest {
+        email:string;
+        password:string;
+    }
+
+    const { mutate, isPending } = useCustomPost<LoginResponse, Error, LoginRequest>(
+    "/users/login",
+        {
+        onSuccess: ({ data }) => {
+            console.login(data);
+        },
+        onError: (err) => {
+            console.log(err);
+        },
+        },
+    );
+
+    const onLogin = async () => {
+    const isValid = validate({
+      name: username,
+      password,
+    });
+
+    if (isValid === true) {
+      mutate({ username, password });
+    }else {
+        showError(isValid)
+    }
+  };
+
+GET
+    interface HomeData {
+        data:string[];
+    }
+    const { data: posts, isLoading, isError } = useCustomQuery<HomeData>("/products", "?limit=150");
+
+    const memoizedPosts = useMemo(() => posts, [posts]);
+
+DARK_MODE 
+    const isDarkMode = UnistylesRuntime.themeName === "dark";
+
+    Change Theme
+        import changeTheme from "@utils/themeHelpers";
+        changeTheme("light") // "light" || "dark"
+
+
+LOGOUT
+    storage.clearAll();
+    dispatch({ type: types.CLEAR_REDUX_STATE });
+
+LOCALIZATION
+    const { languages, defaultLanguage } = useSelector((state) => state.settings);
+    ---> "languages" is array of all languages
+    ---> "defaultLanguage" is object of current Save Language 
+
+    TO Change Language 
+    import changeLanguage from "@utils/i18nHelpers";
+    let val = {
+        name:"English",
+        sortName:"en"
+    }
+    changeLanguage(val)
+    
