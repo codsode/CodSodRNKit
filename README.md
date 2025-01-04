@@ -5,9 +5,9 @@
 <!-- ![React Native Boilerplate License](https://img.shields.io/github/license/codsode/CodSodRNKit) -->
 
 ![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)
-![React Native Boilerplate Download](https://flat.badgen.net/npm/dt/codsod-react-native-kit)
+![React Native Boilerplate Download](https://flat.badgen.net/npm/dt/@codsod/react-native-kit)
 ![React Native Boilerplate Top Language](https://img.shields.io/github/languages/top/codsode/CodSodRNKit)
-[![npm version](https://img.shields.io/npm/v/codsod-react-native-kit)](https://www.npmjs.com/package/codsod-react-native-kit)
+[![npm version](https://img.shields.io/npm/v/@codsod/react-native-kit)](https://www.npmjs.com/package/@codsod/react-native-kit)
 
 # Key Features
 
