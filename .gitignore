@@ -20,3 +20,5 @@ package-lock.json
 node_modules
 template/js
 .qodo
+
+documentation.html
