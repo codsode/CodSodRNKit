@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'CodSodRNKit' do
+target 'HelloWorld' do
   config = use_native_modules!
 
   use_react_native!(
@@ -23,7 +23,7 @@ target 'CodSodRNKit' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'CodSodRNKitTests' do
+  target 'HelloWorldTests' do
     inherit! :complete
     # Pods for testing
   end

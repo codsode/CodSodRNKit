@@ -1,4 +1,4 @@
-# 🎉 CodSodRNKit
+# 🎉 HelloWorld
 
 🚀 **The Ultimate React Native Boilerplate**  
 Kickstart your app development journey with a pre-configured setup designed for modern React Native projects.
@@ -14,7 +14,7 @@ Kickstart your app development journey with a pre-configured setup designed for 
 
 ---
 
-## 📋 Why Choose CodSodRNKit?
+## 📋 Why Choose HelloWorld?
 
 - **Save Time:** No need for repetitive configurations.
 - **Streamline Workflow:** Focus on building amazing apps.
@@ -27,5 +27,5 @@ Kickstart your app development journey with a pre-configured setup designed for 
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/codsode/CodSodRNKit.git
+git clone https://github.com/codsode/HelloWorld.git
 ```

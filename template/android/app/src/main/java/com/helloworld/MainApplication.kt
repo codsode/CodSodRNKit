@@ -1,4 +1,4 @@
-package com.codsodrnkit
+package com.helloworld
 
 import android.app.Application
 import com.facebook.react.PackageList
