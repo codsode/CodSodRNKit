@@ -1,7 +1,8 @@
 # 🎉 Welcome to Your New App
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/codsode/CodSodRNKit/main/assets/codsod-logo.png" alt="CodSod Logo" width="200" />
+  <img src="https://i.imgur.com/CMtktgM.jpeg" alt="CodSod Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; display: block;">
+
   
   <h3>Built with the CodSod React Native Template</h3>
   

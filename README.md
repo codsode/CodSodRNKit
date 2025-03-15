@@ -1,7 +1,8 @@
 # 🚀 CodSodRNKit - Ultimate React Native Boilerplate
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/codsode/CodSodRNKit/main/assets/codsod-logo.png" alt="CodSod Logo" width="300" />
+  <img src="https://i.imgur.com/CMtktgM.jpeg" alt="CodSod Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; display: block;">
+
 </p>
 
 <p align="center">
@@ -271,16 +272,9 @@ npm run ios
 yarn ios
 ```
 
-## 📚 Documentation
-
-For more detailed documentation:
-
-- Check out our [Documentation](https://github.com/codsode/CodSodRNKit/blob/main/documentation.html)
-- View the [Troubleshooting Guide](https://github.com/codsode/CodSodRNKit/blob/main/documentation.html#troubleshooting)
-
 ## 🎓 Learn More
 
-Visit the [CodSod YouTube Channel](https://www.youtube.com/channel/codsod) for detailed tutorials on React Native development and computer science education.
+Visit the [CodSod YouTube Channel](https://www.youtube.com/@_codsod) for detailed tutorials on React Native development and computer science education.
 
 ## 🤝 Contributing
 
