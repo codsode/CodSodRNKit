@@ -1,0 +1,115 @@
+---- API Calling
+GET
+    interface HomeData {
+        name: string
+    }
+    const { data: posts, isLoading, isError } = useCustomQuery<HomeData>("/products", "?limit=150");
+
+    const memoizedPosts = useMemo(() => posts, [posts]);
+
+POST
+
+    interface LoginResponse {
+        success:boolean
+    }
+
+    interface LoginRequestData {
+        email: string;
+        password: string
+    }
+
+    const { mutate, isPending } = useCustomPost<LoginResponse, Error, LoginRequestData>(
+    "/auth/login",
+        {
+        onSuccess: ({ data }) => {
+            // @ts-expect-error : will fix later
+            dispatch(saveUserData(data));
+        },
+        onError: (e) => {
+            alertFunction("Error", "An error occurred");
+        },
+        },
+    );
+
+
+---- Dark Mode Handling
+
+CHECK DARK MODE
+
+    const isDarkMode = UnistylesRuntime.themeName === "dark";
+
+CHENGE THEME
+    import { UnistylesRuntime } from "react-native-unistyles";
+    const changeTheme = (mode: ThemeMode) => {
+    setItem("defaultTheme", { myTheme: mode });
+    UnistylesRuntime.setTheme(mode);
+    };
+
+    changeTheme(isDarkMode ? "light" : "dark")
+
+--- LOCALIZATION CHANGE
+    const { languages, defaultLanguage } = useSelector((state:any) => state.settings); // languages is languages list
+
+    const changeLanguage = (lng: LanguageInterface) => {
+        if (i18n.language === lng.sortName) {
+        return;
+    }
+    setItem("defaultLanguage", lng);
+    i18n.changeLanguage(lng.sortName);
+    const isArabic = lng.sortName === "ar";
+    I18nManager.forceRTL(isArabic);
+    RNRestart.restart();
+    };
+
+    changeLanguage(val)
+
+
+--- STYLING 
+    import { createStyleSheet, useStyles } from "react-native-unistyles";
+
+    const {styles} = useStyles(stylesheet);
+
+    const stylesheet = createStyleSheet((theme) => ({
+        modalView: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: verticalScale(8),
+        },
+        textStyle: (isSelected: boolean) => ({
+            fontFamily: isSelected ? fontFamily.semiBold : fontFamily.regular,
+            color: isSelected ? theme.colors.danger : theme.colors.typography,
+        })
+    }))
+
+    style={styles.textStyle(defaultLanguage.sortName === val.sortName)}
+    style={styles.modalView}
+
+
+--- LOGOUT
+
+    const onPressLogout = () => {
+      storage.clearAll();
+      dispatch({ type: types.CLEAR_REDUX_STATE });
+    };
+
+
+--- NAVIGATION CALL
+    const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+
+--- FLATLIST CALL
+
+    <FlatList
+        data={memoizedPosts?.products || []}
+        renderItem={(props) => <HomeListItems {...props} navigation={navigation} />}
+        keyExtractor={(item, index) => String(item?.id || index)}
+        ListEmptyComponent={<EmptyComp isError={isError} isLoading={isLoading} />}
+      />
+
+    interface HomeListItemsProps {
+    item: ProductsData;
+    navigation: NavigationProp<HomeStackParamList>;
+    }
+
+    const HomeListItems: React.FC<HomeListItemsProps> = memo(({ item, navigation }) => {
+        return <></>
+    })

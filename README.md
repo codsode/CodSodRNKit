@@ -1,11 +1,6 @@
 # 🚀 CodSodRNKit - Ultimate React Native Boilerplate
 
 <p align="center">
-  <img src="https://i.imgur.com/CMtktgM.jpeg" alt="CodSod Logo" width="200" height="200" style="border-radius: 50%; object-fit: cover; display: block;">
-
-</p>
-
-<p align="center">
   <b>⚛️ Jumpstart your app development with this powerful React Native template. Created by the CodSod Computer Science Education Channel.</b>
 </p>
 
@@ -311,3 +306,217 @@ This project is licensed under the ISC License - see the LICENSE file for detail
 <p align="center">
   Developed with ❤️ by <a href="https://github.com/codsode">CodSod</a>
 </p>
+
+## 📝 Code Examples
+
+<div align="center">
+  <h3>🛠️ Professional React Native Development Made Easy</h3>
+  <p>Explore these ready-to-use code snippets that demonstrate the powerful features in CodSodRNKit</p>
+</div>
+
+<br/>
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔄 API Integration
+
+#### GET Request with Type Safety
+
+```typescript
+interface HomeData {
+  name: string;
+}
+
+// Fetch data with React Query
+const {
+  data: posts,
+  isLoading,
+  isError,
+} = useCustomQuery<HomeData>("/products", "?limit=150");
+
+// Optimize rendering
+const memoizedPosts = useMemo(() => posts, [posts]);
+```
+
+</td>
+<td width="50%">
+
+#### POST Request with Error Handling
+
+```typescript
+interface LoginResponse {
+  success: boolean;
+}
+
+interface LoginRequestData {
+  email: string;
+  password: string;
+}
+
+// Mutation hook with TypeScript support
+const { mutate, isPending } = useCustomPost<
+  LoginResponse,
+  Error,
+  LoginRequestData
+>("/auth/login", {
+  onSuccess: ({ data }) => {
+    dispatch(saveUserData(data));
+  },
+  onError: (e) => {
+    alertFunction("Error", "An error occurred");
+  },
+});
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### 🌓 Theme Management
+
+```typescript
+// Check current theme
+const isDarkMode = UnistylesRuntime.themeName === "dark";
+
+// Theme switching function
+const changeTheme = (mode: ThemeMode) => {
+  // Save user preference
+  setItem("defaultTheme", { myTheme: mode });
+  // Apply theme instantly
+  UnistylesRuntime.setTheme(mode);
+};
+
+// Toggle between light and dark
+changeTheme(isDarkMode ? "light" : "dark");
+```
+
+</td>
+<td>
+
+### 🌍 Internationalization
+
+```typescript
+// Access languages from Redux store
+const { languages, defaultLanguage } = useSelector(
+  (state: any) => state.settings
+);
+
+// Language change with RTL support
+const changeLanguage = (lng: LanguageInterface) => {
+  if (i18n.language === lng.sortName) return;
+
+  setItem("defaultLanguage", lng);
+  i18n.changeLanguage(lng.sortName);
+
+  // Handle right-to-left languages
+  const isArabic = lng.sortName === "ar";
+  I18nManager.forceRTL(isArabic);
+  RNRestart.restart();
+};
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### 🎨 Styling with Unistyles
+
+```typescript
+// Import styling utilities
+import { createStyleSheet, useStyles } from "react-native-unistyles";
+
+// Access styles in your component
+const { styles } = useStyles(stylesheet);
+
+// Theme-aware stylesheet
+const stylesheet = createStyleSheet((theme) => ({
+  modalView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: verticalScale(8),
+  },
+  // Dynamic styling with parameters
+  textStyle: (isSelected: boolean) => ({
+    fontFamily: isSelected ? fontFamily.semiBold : fontFamily.regular,
+    color: isSelected ? theme.colors.danger : theme.colors.typography,
+  }),
+}));
+```
+
+</td>
+<td>
+
+### 🧭 Navigation & Authentication
+
+```typescript
+// Type-safe navigation
+const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+
+// Navigate with parameters
+navigation.navigate("Details", { id: 123 });
+
+// Secure logout implementation
+const onPressLogout = () => {
+  // Clear all stored data
+  storage.clearAll();
+  // Reset application state
+  dispatch({ type: types.CLEAR_REDUX_STATE });
+  // Redirect to login
+  navigation.reset({
+    index: 0,
+    routes: [{ name: "Login" }],
+  });
+};
+```
+
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+
+### 📋 Performance-Optimized Lists
+
+```typescript
+// Efficient FlatList implementation with memoization
+<FlatList
+  data={memoizedPosts?.products || []}
+  renderItem={(props) => <HomeListItems {...props} navigation={navigation} />}
+  keyExtractor={(item, index) => String(item?.id || index)}
+  ListEmptyComponent={<EmptyComp isError={isError} isLoading={isLoading} />}
+  initialNumToRender={10}
+  windowSize={5}
+  maxToRenderPerBatch={10}
+  removeClippedSubviews={true}
+/>;
+
+// Memoized list item for optimal performance
+const HomeListItems: React.FC<HomeListItemsProps> = memo(
+  ({ item, navigation }) => {
+    // Prevent unnecessary function recreation
+    const handlePress = useCallback(() => {
+      navigation.navigate("Details", { id: item.id });
+    }, [item.id, navigation]);
+
+    return (
+      <Pressable onPress={handlePress} style={styles.itemContainer}>
+        <Text style={styles.title}>{item.title}</Text>
+      </Pressable>
+    );
+  }
+);
+```
+
+</td>
+</tr>
+</table>
+
+<div align="center">
+  <p><i>📘 For complete documentation and more examples, check out our <a href="https://github.com/codsode/CodSodRNKit/wiki">Wiki</a></i></p>
+</div>
