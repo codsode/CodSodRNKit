@@ -1,8 +1,13 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
-import {it} from '@jest/globals';
-import App from '../src/App';
+/**
+ * @format
+ */
 
-it('renders correctly', () => {
-  renderer.create(<App />);
+import React from 'react';
+import ReactTestRenderer from 'react-test-renderer';
+import App from '../App';
+
+test('renders correctly', async () => {
+  await ReactTestRenderer.act(() => {
+    ReactTestRenderer.create(<App />);
+  });
 });
