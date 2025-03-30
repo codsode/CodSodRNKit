@@ -172,6 +172,54 @@ const asciiArt = `
                             )}                                                   
 `;
 
+/**
+ * Handle gitignore file copying
+ * @param {string} projectPath - The root path of the project
+ */
+function handleGitignore(projectPath) {
+  console.log(blue("\nHandling gitignore file..."));
+
+  const gitignorePath = path.join(projectPath, "gitignore");
+  const dotGitignorePath = path.join(projectPath, ".gitignore");
+
+  try {
+    // Check if gitignore exists
+    if (fs.existsSync(gitignorePath)) {
+      console.log(gray("Found gitignore file"));
+
+      // Read the contents of gitignore
+      const gitignoreContent = fs.readFileSync(gitignorePath, "utf8");
+
+      // Check if .gitignore exists
+      if (fs.existsSync(dotGitignorePath)) {
+        console.log(gray("Found existing .gitignore file, appending contents"));
+        // Read existing .gitignore content
+        const existingContent = fs.readFileSync(dotGitignorePath, "utf8");
+        // Append new content if it's not already there
+        if (!existingContent.includes(gitignoreContent)) {
+          fs.writeFileSync(
+            dotGitignorePath,
+            existingContent + "\n" + gitignoreContent,
+            "utf8"
+          );
+        }
+      } else {
+        console.log(gray("Creating new .gitignore file"));
+        // Create new .gitignore file
+        fs.writeFileSync(dotGitignorePath, gitignoreContent, "utf8");
+      }
+
+      // Delete the original gitignore file
+      console.log(gray("Removing original gitignore file"));
+      fs.unlinkSync(gitignorePath);
+    } else {
+      console.log(gray("No gitignore file found, skipping"));
+    }
+  } catch (error) {
+    console.error("Error handling gitignore:", error);
+  }
+}
+
 // Main function that runs after initialization
 function main() {
   try {
@@ -211,6 +259,9 @@ function main() {
 
     // Display the ASCII art
     printCenteredAsciiArt(asciiArt);
+
+    // Handle gitignore file
+    handleGitignore(projectPath);
 
     // Process project name replacements
     if (projectName) {
