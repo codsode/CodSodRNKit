@@ -54,7 +54,7 @@ function processProjectName(projectName, projectPath) {
     "android/app/src/main/java/com/helloworld/MainActivity.kt",
     "android/app/src/main/java/com/helloworld/MainApplication.kt",
     "android/settings.gradle",
-    "ios/HelloWorld/AppDelegate.mm",
+    "ios/HelloWorld/AppDelegate.swift",
     "ios/HelloWorld/Info.plist",
     "ios/HelloWorld.xcodeproj/project.pbxproj",
     "ios/Podfile",

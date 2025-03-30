@@ -8,6 +8,7 @@ npm-debug.log
 yarn-error.log
 node_modules
 template/node_modules
+template/package-lock.json
 template/vendor/bundle/
 template/ios/Pods
 template/ios/build
@@ -19,3 +20,9 @@ template/android/.idea
 documentation
 .github
 documentation.html
+.husky
+.vscode
+.env
+.env.local
+.env.development.local
+.env.test.local

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodSod React Native Template Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f5f5f5;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            padding: 2px 5px;
+            font-size: 0.9em;
+        }
+        pre {
+            background-color: #f5f5f5;
+            border-left: 3px solid #3498db;
+            padding: 15px;
+            border-radius: 3px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .note {
+            background-color: #e7f5fe;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff5e6;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .steps {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .steps h4 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .logo {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>CodSod React Native Template</h1>
+            <p><em>A powerful React Native boilerplate for rapid development</em></p>
+        </div>
+
+        <h2>📝 Documentation: Fixing Naming Issues</h2>
+        
+        <div class="note">
+            <strong>This documentation explains how to fix naming issues in the React Native template.</strong> 
+            We'll cover the causes of app name problems and provide detailed solutions.
+        </div>
+
+        <h3>Common Issues</h3>
+
+        <p>When using the CodSod React Native template, you might encounter the following issues:</p>
+
+        <ol>
+            <li>The app name shows as "CodSodRNKit" instead of your project name</li>
+            <li>The post-initialization script opens in Notepad instead of executing in the terminal</li>
+            <li>The error "Invariant Violation: CodSodRNKit has not been registered" appears</li>
+        </ol>
+
+        <h3>Root Causes</h3>
+
+        <p>These issues occur due to several factors:</p>
+
+        <ul>
+            <li>Leftover "CodSodRNKit" references in template files</li>
+            <li>Improper handling of the project name in the post-init script</li>
+            <li>Missing executable permissions for script files</li>
+            <li>React Native CLI not properly passing project name information</li>
+        </ul>
+
+        <h3>Solutions</h3>
+
+        <div class="steps">
+            <h4>1. Fix Template Configuration</h4>
+            <p>Update the <code>template.config.js</code> file to properly handle project name substitution:</p>
+            <pre>module.exports = {
+  placeholderName: "HelloWorld",
+  titlePlaceholder: "Hello App Display Name",
+  templateDir: "./template",
+  postInitScript: "./post-init.script.js",
+  transformManifest: (manifest) => {
+    manifest.vars = {
+      ...manifest.vars,
+      project_name: manifest.name,
+    };
+    return manifest;
+  },
+};</pre>
+            <p>The <code>transformManifest</code> function ensures the project name is passed correctly to the post-init script.</p>
+        </div>
+
+        <div class="steps">
+            <h4>2. Enhance the Post-Init Script</h4>
+            <p>Update your post-init script with these key improvements:</p>
+            <ul>
+                <li>Add a proper shebang line at the beginning: <code>#!/usr/bin/env node</code></li>
+                <li>Implement more robust project name detection logic</li>
+                <li>Include special handling for any remaining "CodSodRNKit" references</li>
+                <li>Add debugging information to help diagnose issues</li>
+            </ul>
+            <p>Here's a snippet of the improved project name detection:</p>
+            <pre>// Try multiple sources for the project name in this order:
+// 1. PROJECT_NAME environment variable (set by RN CLI)
+// 2. From React Native template CLI args
+// 3. From command line args
+// 4. From the directory name as last resort
+let projectName = process.env.PROJECT_NAME;
+const projectPath = process.cwd();
+
+// If no PROJECT_NAME env var, check for RN CLI specific args format
+if (!projectName && process.argv.length > 2) {
+  // React Native CLI might pass template vars as JSON in args
+  try {
+    const argsData = JSON.parse(process.argv[2]);
+    if (argsData && argsData.project_name) {
+      projectName = argsData.project_name;
+      console.log(blue(`Found project name in CLI args JSON: ${projectName}`));
+    }
+  } catch (e) {
+    // Not JSON, try as simple arg
+    projectName = process.argv[2];
+    console.log(blue(`Using command line arg as project name: ${projectName}`));
+  }
+}</pre>
+        </div>
+
+        <div class="steps">
+            <h4>3. Ensure Proper File Permissions</h4>
+            <p>Add a postinstall script to package.json to ensure executable permissions:</p>
+            <pre>"postinstall": "node -e \"try { require('fs').chmodSync('./post-init.script.js', '755') } catch(e) { console.error(e) }\""</pre>
+            <p>This ensures the script can be executed after installation.</p>
+        </div>
+
+        <div class="steps">
+            <h4>4. Create a Template Preparation Script</h4>
+            <p>Create a script that scans and fixes all template files before publishing:</p>
+            <pre>// Main function to fix the template
+function fixTemplate() {
+  // Get all files in the template directory
+  const templatePath = path.join(__dirname, 'template');
+  const filesToProcess = getAllFiles(templatePath);
+  
+  // Process each file
+  filesToProcess.forEach(filePath => {
+    // Skip binary files and node_modules
+    if (skipExtensions.includes(path.extname(filePath)) || 
+        filePath.includes('node_modules')) {
+      return;
+    }
+    
+    try {
+      // Replace all occurrences of CodSodRNKit with HelloWorld
+      let content = fs.readFileSync(filePath, 'utf8');
+      content = content.replace(/CodSodRNKit/g, 'HelloWorld');
+      content = content.replace(/codsodrnkit/g, 'helloworld');
+      
+      fs.writeFileSync(filePath, content, 'utf8');
+    } catch (error) {
+      // Handle errors
+    }
+  });
+}</pre>
+            <p>This script ensures all template files use the correct placeholder name.</p>
+        </div>
+
+        <div class="steps">
+            <h4>5. Update Package.json Scripts</h4>
+            <p>Add scripts to automate the template preparation:</p>
+            <pre>"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "postinstall": "node -e \"try { require('fs').chmodSync('./post-init.script.js', '755') } catch(e) { console.error(e) }\"",
+  "prepare-template": "node fix-template.js",
+  "prepublishOnly": "npm run prepare-template"
+}</pre>
+            <p>The <code>prepublishOnly</code> script ensures the template is properly prepared before publishing to npm.</p>
+        </div>
+
+        <h3>Testing Your Template</h3>
+
+        <p>After implementing these fixes, test your template with the following steps:</p>
+
+        <ol>
+            <li>Update the version number in package.json (e.g., from 0.1.3 to 0.1.4)</li>
+            <li>Run <code>npm run prepare-template</code> to ensure all files are fixed</li>
+            <li>Publish the template to npm with <code>npm publish</code></li>
+            <li>Create a new project using: <code>npx @react-native-community/cli@latest init YourAppName --template @codsod/react-native-kit</code></li>
+            <li>Verify that the app name is set correctly and no errors appear</li>
+        </ol>
+
+        <div class="warning">
+            <strong>Important Note:</strong> If you encounter any issues after publishing, you may need to update the template again and publish a new version. NPM caches package versions, so you'll need to increment the version number each time.
+        </div>
+
+        <h3>Troubleshooting</h3>
+
+        <table>
+            <tr>
+                <th>Issue</th>
+                <th>Possible Solution</th>
+            </tr>
+            <tr>
+                <td>Post-init script still not executing</td>
+                <td>Check that the script has a proper shebang line and executable permissions. Run <code>chmod +x post-init.script.js</code> manually if needed.</td>
+            </tr>
+            <tr>
+                <td>App name still showing as "CodSodRNKit"</td>
+                <td>Run the fix-template.js script and check that all occurrences of "CodSodRNKit" are replaced. There may be binary files or hidden files that need manual editing.</td>
+            </tr>
+            <tr>
+                <td>NOBRIDGE error still appearing</td>
+                <td>This usually means the app name in app.json doesn't match the registered component name. Verify that both index.js and app.json are using the correct name.</td>
+            </tr>
+        </table>
+
+        <h3>Conclusion</h3>
+
+        <p>By following these steps, you should be able to fix any naming issues in your React Native template. These improvements ensure a smooth experience for users of your template, allowing them to focus on building their app rather than troubleshooting configuration issues.</p>
+
+        <div class="footer">
+            <p>Created by CodSod - Computer Science Education Channel</p>
+            <p><a href="https://github.com/codsode/CodSodRNKit">GitHub Repository</a> | <a href="https://www.youtube.com/channel/codsod">YouTube Channel</a></p>
+        </div>
+    </div>
+</body>
+</html> 
