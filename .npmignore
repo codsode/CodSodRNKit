@@ -17,6 +17,7 @@ template/android/app/build
 template/android/build
 template/android/.gradle
 template/android/.idea
+template/bun.lockb
 documentation
 .github
 documentation.html

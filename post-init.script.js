@@ -58,6 +58,7 @@ function processProjectName(projectName, projectPath) {
     "ios/HelloWorld/Info.plist",
     "ios/HelloWorld.xcodeproj/project.pbxproj",
     "ios/Podfile",
+    "ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/CodSodRNKit.xcscheme",
   ];
 
   // Process each file if it exists
@@ -111,6 +112,14 @@ function processProjectName(projectName, projectPath) {
   const newIosTestsDir = path.join(iosDir, `${projectName}Tests`);
   const oldIosXcodeDir = path.join(iosDir, "HelloWorld.xcodeproj");
   const newIosXcodeDir = path.join(iosDir, `${projectName}.xcodeproj`);
+  const oldIosSchemeDir = path.join(
+    iosDir,
+    "HelloWorld.xcodeproj/xcshareddata/xcschemes"
+  );
+  const newIosSchemeDir = path.join(
+    iosDir,
+    `${projectName}.xcodeproj/xcshareddata/xcschemes`
+  );
 
   // Rename iOS directories if they exist
   [
@@ -136,6 +145,23 @@ function processProjectName(projectName, projectPath) {
       }
     }
   });
+
+  // Rename iOS scheme file
+  const oldSchemeFile = path.join(oldIosSchemeDir, "CodSodRNKit.xcscheme");
+  const newSchemeFile = path.join(newIosSchemeDir, `${projectName}.xcscheme`);
+
+  if (fs.existsSync(oldSchemeFile)) {
+    try {
+      console.log(
+        blue(
+          `Renaming iOS scheme file from CodSodRNKit.xcscheme to ${projectName}.xcscheme`
+        )
+      );
+      fs.renameSync(oldSchemeFile, newSchemeFile);
+    } catch (error) {
+      console.error("Error renaming iOS scheme file:", error);
+    }
+  }
 }
 
 function printCenteredAsciiArt(asciiArt) {
@@ -220,6 +246,27 @@ function handleGitignore(projectPath) {
   }
 }
 
+/**
+ * Set executable permissions for gradlew
+ * @param {string} projectPath - The root path of the project
+ */
+function setGradlePermissions(projectPath) {
+  console.log(blue("\nSetting gradlew permissions..."));
+  const gradlewPath = path.join(projectPath, "android", "gradlew");
+
+  try {
+    if (fs.existsSync(gradlewPath)) {
+      // Set executable permissions (chmod +x)
+      fs.chmodSync(gradlewPath, "755");
+      console.log(green("✓ Successfully set gradlew permissions"));
+    } else {
+      console.log(gray("gradlew file not found, skipping permission setting"));
+    }
+  } catch (error) {
+    console.error("Error setting gradlew permissions:", error);
+  }
+}
+
 // Main function that runs after initialization
 function main() {
   try {
@@ -260,18 +307,14 @@ function main() {
     // Display the ASCII art
     printCenteredAsciiArt(asciiArt);
 
-    // Handle gitignore file
-    handleGitignore(projectPath);
+    // Process project name
+    processProjectName(projectName, projectPath);
 
-    // Process project name replacements
-    if (projectName) {
-      processProjectName(projectName, projectPath);
-    } else {
-      console.log(blue("\nWarning: Could not determine project name."));
-      console.log(
-        blue("Project name substitution may not have occurred properly.")
-      );
-    }
+    // Set gradlew permissions
+    setGradlePermissions(projectPath);
+
+    // Handle gitignore
+    handleGitignore(projectPath);
   } catch (error) {
     console.error("Error in post-init script:", error);
   }
