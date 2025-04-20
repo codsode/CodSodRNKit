@@ -20,7 +20,7 @@ console.log(blue("======================================================"));
  * @param {string} projectName - The name of the new project
  * @param {string} projectPath - The root path of the project
  */
-function processProjectName(projectName, projectPath) {
+async function processProjectName(projectName, projectPath) {
   console.log(blue(`\nProcessing project name: ${projectName}`));
 
   // Make sure to check specifically for CodSodRNKit in app.json
@@ -58,11 +58,11 @@ function processProjectName(projectName, projectPath) {
     "ios/HelloWorld/Info.plist",
     "ios/HelloWorld.xcodeproj/project.pbxproj",
     "ios/Podfile",
-    "ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/CodSodRNKit.xcscheme",
+    "ios/HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme",
   ];
 
   // Process each file if it exists
-  filesToProcess.forEach((filePath) => {
+  for (const filePath of filesToProcess) {
     const fullPath = path.join(projectPath, filePath);
     if (fs.existsSync(fullPath)) {
       try {
@@ -84,7 +84,7 @@ function processProjectName(projectName, projectPath) {
     } else {
       console.log(gray(`File not found: ${filePath}`));
     }
-  });
+  }
 
   // Handle directory renaming for Android
   const androidSrcDir = path.join(projectPath, "android/app/src/main/java/com");
@@ -104,21 +104,132 @@ function processProjectName(projectName, projectPath) {
     }
   }
 
+  // Function to handle iOS scheme file renaming
+  const renameIosScheme = async () => {
+    const iosDir = path.join(projectPath, "ios");
+
+    // Search for the scheme file in case directory structure has changed
+    const findSchemeFile = (dirPath, schemeName, depth = 0) => {
+      if (depth > 4) return null; // Limit recursion depth
+
+      try {
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+        // First look for the exact scheme file
+        const exactFile = path.join(dirPath, `${schemeName}.xcscheme`);
+        if (fs.existsSync(exactFile)) return exactFile;
+
+        // Then recursively search subdirectories
+        for (const entry of entries) {
+          if (entry.isDirectory()) {
+            const foundPath = findSchemeFile(
+              path.join(dirPath, entry.name),
+              schemeName,
+              depth + 1
+            );
+            if (foundPath) return foundPath;
+          } else if (entry.name === `${schemeName}.xcscheme`) {
+            return path.join(dirPath, entry.name);
+          }
+        }
+      } catch (error) {
+        console.error(`Error searching directory ${dirPath}:`, error);
+      }
+
+      return null;
+    };
+
+    // First try the expected path
+    let oldSchemeFile = path.join(
+      iosDir,
+      "HelloWorld.xcodeproj/xcshareddata/xcschemes/HelloWorld.xcscheme"
+    );
+
+    // If not found, search for it
+    if (!fs.existsSync(oldSchemeFile)) {
+      console.log(
+        blue("Scheme file not found at expected location, searching...")
+      );
+      oldSchemeFile = findSchemeFile(iosDir, "HelloWorld");
+
+      if (!oldSchemeFile) {
+        console.error(
+          "Could not find HelloWorld.xcscheme file in iOS directory"
+        );
+        return false;
+      }
+    }
+
+    // Now get the directory to create the new scheme file
+    const schemeDir = path.dirname(oldSchemeFile);
+    const newSchemeFile = path.join(schemeDir, `${projectName}.xcscheme`);
+
+    if (oldSchemeFile === newSchemeFile) {
+      console.log(
+        blue("Scheme file already named correctly, no need to rename")
+      );
+      return true;
+    }
+
+    try {
+      console.log(
+        blue(
+          `Renaming iOS scheme file from HelloWorld.xcscheme to ${projectName}.xcscheme`
+        )
+      );
+
+      // Read the scheme file and replace any remaining references
+      let schemeContent = fs.readFileSync(oldSchemeFile, "utf8");
+      schemeContent = schemeContent.replace(/HelloWorld/g, projectName);
+
+      // Write the new scheme file first
+      fs.writeFileSync(newSchemeFile, schemeContent, "utf8");
+
+      // Then delete the old one
+      if (fs.existsSync(oldSchemeFile)) {
+        fs.unlinkSync(oldSchemeFile);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error renaming iOS scheme file:", error);
+      return false;
+    }
+  };
+
+  // Try to rename the scheme file with a retry mechanism
+  let schemeRenamed = false;
+  const maxRetries = 5;
+  const retryDelay = 1000; // 1 second
+
+  for (let i = 0; i < maxRetries && !schemeRenamed; i++) {
+    if (i > 0) {
+      console.log(
+        blue(`Retrying scheme file rename (attempt ${i + 1}/${maxRetries})...`)
+      );
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+    schemeRenamed = await renameIosScheme();
+  }
+
+  if (!schemeRenamed) {
+    console.log(
+      blue(
+        "Could not rename iOS scheme file. Please rename it manually after the project is created."
+      )
+    );
+  }
+
   // Handle directory renaming for iOS
-  const iosDir = path.join(projectPath, "ios");
-  const oldIosProjectDir = path.join(iosDir, "HelloWorld");
-  const newIosProjectDir = path.join(iosDir, projectName);
-  const oldIosTestsDir = path.join(iosDir, "HelloWorldTests");
-  const newIosTestsDir = path.join(iosDir, `${projectName}Tests`);
-  const oldIosXcodeDir = path.join(iosDir, "HelloWorld.xcodeproj");
-  const newIosXcodeDir = path.join(iosDir, `${projectName}.xcodeproj`);
-  const oldIosSchemeDir = path.join(
-    iosDir,
-    "HelloWorld.xcodeproj/xcshareddata/xcschemes"
-  );
-  const newIosSchemeDir = path.join(
-    iosDir,
-    `${projectName}.xcodeproj/xcshareddata/xcschemes`
+  const oldIosProjectDir = path.join(projectPath, "ios/HelloWorld");
+  const newIosProjectDir = path.join(projectPath, "ios", projectName);
+  const oldIosTestsDir = path.join(projectPath, "ios/HelloWorldTests");
+  const newIosTestsDir = path.join(projectPath, "ios", `${projectName}Tests`);
+  const oldIosXcodeDir = path.join(projectPath, "ios/HelloWorld.xcodeproj");
+  const newIosXcodeDir = path.join(
+    projectPath,
+    "ios",
+    `${projectName}.xcodeproj`
   );
 
   // Rename iOS directories if they exist
@@ -145,23 +256,6 @@ function processProjectName(projectName, projectPath) {
       }
     }
   });
-
-  // Rename iOS scheme file
-  const oldSchemeFile = path.join(oldIosSchemeDir, "CodSodRNKit.xcscheme");
-  const newSchemeFile = path.join(newIosSchemeDir, `${projectName}.xcscheme`);
-
-  if (fs.existsSync(oldSchemeFile)) {
-    try {
-      console.log(
-        blue(
-          `Renaming iOS scheme file from CodSodRNKit.xcscheme to ${projectName}.xcscheme`
-        )
-      );
-      fs.renameSync(oldSchemeFile, newSchemeFile);
-    } catch (error) {
-      console.error("Error renaming iOS scheme file:", error);
-    }
-  }
 }
 
 function printCenteredAsciiArt(asciiArt) {
@@ -268,7 +362,7 @@ function setGradlePermissions(projectPath) {
 }
 
 // Main function that runs after initialization
-function main() {
+async function main() {
   try {
     // Try multiple sources for the project name in this order:
     // 1. PROJECT_NAME environment variable (set by RN CLI)
@@ -308,7 +402,7 @@ function main() {
     printCenteredAsciiArt(asciiArt);
 
     // Process project name
-    processProjectName(projectName, projectPath);
+    await processProjectName(projectName, projectPath);
 
     // Set gradlew permissions
     setGradlePermissions(projectPath);
@@ -347,4 +441,7 @@ function processComplete() {
 
 // Execute the main function
 console.log(blue("Starting post-init script execution..."));
-main();
+main().catch((error) => {
+  console.error("Fatal error in post-init script:", error);
+  process.exit(1);
+});
